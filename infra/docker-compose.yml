@@ -1,0 +1,50 @@
+services:
+  broker-service:
+    build:
+      context: ./../broker-service
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - api_net
+
+  authentication-service:
+    build:
+      context: ./../authentication-service
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8001:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      - DSN="postgresql://root:password@postgres_auth:5432/users?sslmode=disable"
+    networks:
+      - api_net
+    
+
+  postgres_auth:
+    image: postgres:12-alpine
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=users
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql
+    networks:
+      - api_net
+
+networks:
+  api_net:
+   

@@ -6,9 +6,6 @@ services:
     restart: always
     ports:
       - "8080:80"
-    deploy:
-      mode: replicated
-      replicas: 1
     networks:
       - api_net
 
@@ -19,23 +16,17 @@ services:
     restart: always
     ports:
       - "8001:80"
-    deploy:
-      mode: replicated
-      replicas: 1
     environment:
-      - DSN="postgresql://root:password@postgres_auth:5432/users?sslmode=disable"
+      - DSN=postgresql://postgres:password@postgres_auth:5432/users?sslmode=disable
     networks:
       - api_net
     
 
   postgres_auth:
-    image: postgres:12-alpine
+    image: postgres:15-alpine
     restart: always
-    deploy:
-      mode: replicated
-      replicas: 1
     environment:
-      - POSTGRES_USER=root
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=users
     ports:

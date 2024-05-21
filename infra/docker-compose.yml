@@ -20,6 +20,19 @@ services:
       - DSN=postgresql://postgres:password@postgres_auth:5432/users?sslmode=disable
     networks:
       - api_net
+
+  logger-service:
+    build:
+      context: ./../logger-service
+      dockerfile: Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - "8002:80"
+    networks:
+      - api_net
     
 
   postgres_auth:
@@ -32,7 +45,20 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./db-data/postgres/:/var/lib/postgresql
+      - ./db-data/postgres/:/var/lib/postgresql/data
+    networks:
+      - api_net
+  
+  mongo_logger:
+    image: mongo:4.2.16-bionic
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=logs
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./db-data/mongo/:/data/db
     networks:
       - api_net
 

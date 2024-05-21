@@ -33,6 +33,27 @@ services:
       - "8002:80"
     networks:
       - api_net
+  
+  mailer-service:
+    build:
+      context: ./../mail-service
+      dockerfile: Dockerfile
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      - MAIL_DOMAIN=localhost
+      - MAIL_HOST=mailhog
+      - MAIL_PORT=1025
+      - MAIL_ENCRYPTION=none
+      - MAIL_USERNAME=""
+      - MAIL_PASSWORD=""
+      - FROM_NAME="MacAnThony Emmanuel"
+      - FROM_ADDRESS="emma@domain.com"
+    networks:
+      - api_net
+
     
 
   postgres_auth:
@@ -48,6 +69,7 @@ services:
       - ./db-data/postgres/:/var/lib/postgresql/data
     networks:
       - api_net
+
   
   mongo_logger:
     image: mongo:4.2.16-bionic
@@ -67,6 +89,8 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+    networks:
+      - api_net
 
 networks:
   api_net:

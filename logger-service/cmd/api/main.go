@@ -49,6 +49,8 @@ func main() {
 	go rpc.Register(new(RPCServer))
 	go app.rpcListen()
 
+	go app.grpcListen()
+
 	log.Println("starting http server 🚀🚀🚀🚀")
 	srv := http.Server{
 		Addr: fmt.Sprintf(":%s", WEB_PORT),
